@@ -12,21 +12,15 @@ const runner = require('./test-runner');
 const app = express();
 
 // Helmet: configurar Content Security Policy correctamente
-app.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        defaultSrc: ["'self'"],
-        scriptSrc: ["'self'"],
-        styleSrc: ["'self'"],
-        imgSrc: ["'self'"],
-        connectSrc: ["'self'", "https://stock-price-checker-proxy.freecodecamp.rocks/"]
-      }
-    }
-  })
-);
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'"],
+    styleSrc: ["'self'", "'unsafe-inline'"]
+  }
+}));
 
-  app.use('/public', express.static(process.cwd() + '/public'));
+app.use('/public', express.static(process.cwd() + '/public'));
 app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

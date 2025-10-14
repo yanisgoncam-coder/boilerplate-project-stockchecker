@@ -47,11 +47,15 @@ module.exports = function(app) {
         }
 
         // Solo un stock
-        res.json({ stockData: results[0] });
-
-      } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Server error' });
+       res.json({ stockData: {
+  stock: results[0].stock,
+  price: results[0].price,
+  likes: results[0].likes
+}});
+      } catch (error) {
+        res.status(500).json({ error: 'Internal server error', details: error.message });
       }
-    });
-};
+    }); // Close async function
+
+}; // Close module.exports function
+    
