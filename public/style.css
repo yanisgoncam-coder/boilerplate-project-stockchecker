@@ -1,28 +1,29 @@
-#userstories {
-  margin-left: 5%;
-  margin-top: 5%;
+body {
+  font-family: Arial, sans-serif;
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 20px;
 }
 
-.p-50 {
-  margin: 50px;
+input[type="text"] {
+  width: 200px;
+  padding: 5px;
 }
 
-#testui {
-  margin-left: 5%;
+label {
+  margin-left: 10px;
 }
 
-.text-align-left {
-  text-align: left;
+button {
+  padding: 5px 10px;
+  margin-left: 10px;
+  cursor: pointer;
 }
 
-input[type='text'] {
-  width: 100px;
-}
-
-.m-50 {
-  margin: 50px;
-}
-
-.mt-200 {
-  margin-top: 200px;
+.result {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  word-wrap: break-word; /* previene overflow de texto largo */
 }
