@@ -1,7 +1,6 @@
 'use strict';
 
-// Base de datos en memoria para ejemplo
-// Para producción, reemplazar con MongoDB
+// Base de datos en memoria
 const stocksDB = {};
 
 module.exports = {

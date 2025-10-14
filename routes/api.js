@@ -1,23 +1,25 @@
 'use strict';
-const fetch = global.fetch;
+const fetch = require('node-fetch'); // Asegúrate de tener node-fetch instalado
 const crypto = require('crypto');
 const Stock = require('../controllers/stocks');
 
-module.exports = function (app) {
+module.exports = function(app) {
 
   app.route('/api/stock-prices')
-    .get(async function (req, res) {
+    .get(async function(req, res) {
       try {
         let { stock, like } = req.query;
         like = like === 'true';
         const stocks = Array.isArray(stock) ? stock : [stock];
 
+        // IP anonima
         const userIP = req.ip || req.connection.remoteAddress;
         const hashedIP = crypto.createHash('sha256').update(userIP).digest('hex');
 
         const results = [];
 
         for (let s of stocks) {
+          // Llamar al proxy FreeCodeCamp
           const url = `https://stock-price-checker-proxy.freecodecamp.rocks/v1/stock/${s}/quote`;
           const response = await fetch(url);
           const data = await response.json();
@@ -32,6 +34,7 @@ module.exports = function (app) {
           });
         }
 
+        // Si hay dos stocks, calcular rel_likes
         if (results.length === 2) {
           const rel1 = results[0].likes - results[1].likes;
           const rel2 = results[1].likes - results[0].likes;
@@ -43,6 +46,7 @@ module.exports = function (app) {
           });
         }
 
+        // Solo un stock
         res.json({ stockData: results[0] });
 
       } catch (err) {
@@ -51,4 +55,3 @@ module.exports = function (app) {
       }
     });
 };
-

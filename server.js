@@ -1,66 +1,67 @@
 'use strict';
 require('dotenv').config();
-const express     = require('express');
-const bodyParser  = require('body-parser');
-const cors        = require('cors');
-const helmet      = require('helmet');
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const helmet = require('helmet');
 
-const apiRoutes         = require('./routes/api.js');
-const fccTestingRoutes  = require('./routes/fcctesting.js');
-const runner            = require('./test-runner');
+const apiRoutes = require('./routes/api.js');
+const fccTestingRoutes = require('./routes/fcctesting.js');
+const runner = require('./test-runner');
 
-const app = express(); // ⬅️ app declarado antes de usar cualquier middleware
+const app = express();
 
-// 🔹 Seguridad con Helmet y Content Security Policy
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'"],
-      imgSrc: ["'self'"],
-      connectSrc: ["'self'", "https://stock-price-checker-proxy.freecodecamp.rocks/"]
+// Helmet: configurar Content Security Policy correctamente
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"],
+        styleSrc: ["'self'"],
+        imgSrc: ["'self'"],
+        connectSrc: ["'self'", "https://stock-price-checker-proxy.freecodecamp.rocks/"]
+      }
     }
-  }
-}));
+  })
+);
 
-// Servir archivos estáticos
-app.use('/public', express.static(process.cwd() + '/public'));
-
-// Para pruebas de FCC
+  app.use('/public', express.static(process.cwd() + '/public'));
 app.use(cors({ origin: '*' }));
-
-// Body parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Página principal
+  // Index page (static HTML)
 app.route('/')
-  .get((req, res) => {
+  .get(function (req, res) {
     res.sendFile(process.cwd() + '/views/index.html');
   });
 
-// Rutas para pruebas FCC
+// FCC Testing routes
 fccTestingRoutes(app);
 
-// Rutas API
+// API routes
 apiRoutes(app);
 
-// 404 Not Found
-app.use((req, res, next) => {
+// 404 Not Found Middleware
+app.use(function (req, res, next) {
   res.status(404).type('text').send('Not Found');
 });
 
-// Iniciar servidor y pruebas
-const listener = app.listen(process.env.PORT || 3000, () => {
+// Start server and run tests if in test mode
+const listener = app.listen(process.env.PORT || 3000, function () {
   console.log('Your app is listening on port ' + listener.address().port);
   if (process.env.NODE_ENV === 'test') {
     console.log('Running Tests...');
-    setTimeout(() => {
-      try { runner.run(); } 
-      catch (e) { console.error('Tests are not valid:', e); }
+    setTimeout(function () {
+      try {
+        runner.run();
+      } catch (e) {
+        console.log('Tests are not valid:');
+        console.error(e);
+      }
     }, 3500);
   }
 });
 
-module.exports = app; // para testing
+module.exports = app; // for testing
